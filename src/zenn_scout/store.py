@@ -48,7 +48,7 @@ def upsert_article(article: dict, body_text: str = "", extra_topics: list[str] |
                 liked_count     = excluded.liked_count,
                 bookmarks_count = excluded.bookmarks_count,
                 updated_at      = excluded.updated_at,
-                topics          = CASE WHEN excluded.topics != '[]' THEN excluded.topics ELSE topics END,
+                topics          = CASE WHEN topics = '[]' THEN excluded.topics ELSE topics END,
                 fetched_at      = excluded.fetched_at
             """,
             (
