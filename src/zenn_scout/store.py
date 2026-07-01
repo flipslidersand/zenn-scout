@@ -48,7 +48,14 @@ def upsert_article(article: dict, body_text: str = "", extra_topics: list[str] |
                 liked_count     = excluded.liked_count,
                 bookmarks_count = excluded.bookmarks_count,
                 updated_at      = excluded.updated_at,
-                topics          = CASE WHEN topics = '[]' THEN excluded.topics ELSE topics END,
+                topics          = (
+                    SELECT json_group_array(DISTINCT value)
+                    FROM (
+                        SELECT value FROM json_each(topics)
+                        UNION
+                        SELECT value FROM json_each(excluded.topics)
+                    )
+                ),
                 fetched_at      = excluded.fetched_at
             """,
             (
